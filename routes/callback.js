@@ -1,24 +1,24 @@
 require('dotenv').config();
 const express = require('express');
 const router = express.Router();
+const axios = require('axios');
 
 // Line Notify
 const clientId = process.env.LINE_NOTIFY_CLIENT_ID;
 const clientSecret = process.env.LINE_NOTIFY_CLIENT_SECRET;
 const redirectUri = `${process.env.ROOT_PATH}/callback`;
 
-let URL = 'https://notify-bot.line.me/oauth/authorize?';
-    URL += 'response_type=code';
-    URL += '&client_id='+clientId;
-    URL += '&redirect_uri='+redirectUri;
-    URL += '&scope=notify';
-    URL += '&state=astro';
+/* GET users listing. */
+// router.get('/', function(req, res, next) {
+//   res.send('respond with a resource');
+// });
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', {
+  const code = req.query.code;
+  res.render('callback', {
     url: URL
   })
+  console.log('code', code)
 });
 
 module.exports = router;
