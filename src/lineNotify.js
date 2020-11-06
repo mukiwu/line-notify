@@ -16,15 +16,14 @@ async function getToken(code, redirectUri, clientId, clientSecret) {
   return await axios.post(url, querystring.encode(formData), { headers }).catch(error=>{});
 }
 
-async function sendNotify(token, message) {
+async function sendNotify(token, data) {
   const url = 'https://notify-api.line.me/api/notify';
   const headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     Authorization: `Bearer ${token}`,
   };
-  const formData = {
-    message,
-  };
+  const formData = data;
+  console.log('formdata', formData)
   return await axios.post(url, querystring.encode(formData), { headers }).catch(error=>{});
 }
 

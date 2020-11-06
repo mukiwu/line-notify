@@ -9,9 +9,14 @@
     <div class="wrapper">
       <div class="align-item">
         <div class="form-group">
-          <label for="notifyMessage">推播訊息</label>
-          <input type="text" class="form-control" id="notifyMessage">
+          <label for="notifyMessage">訊息 (必填)</label>
+          <textarea class="form-control" id="notifyMessage" rows="3" required></textarea>
           <small class="form-text text-muted">請輸入要推播的內容</small>
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlFile1">圖片上傳</label>
+          <input type="file" class="form-control-file" id="notifyFile">
+          <small class="form-text text-muted">支援格式 jpg, png，圖片大小 2048 x 2048px 以內</small>
         </div>
         <button type="submit" id="notifySend" class="btn btn-lg btn-primary btn-block">送出</button>
       </div>
@@ -19,17 +24,28 @@
   </body>
   <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
   <script>
+  $(function(){
+    let src = "";
+    function getImgPath() {
+      $('#notifyFile').change(function() {
+        src = document.getElementById('notifyFile').files[0];
+        return src
+      });
+    }
+    getImgPath();
     $("#notifySend").on('click', function() {
       $.ajax({
         method: 'post',
         url: "/sendMessage",
         data: {
           "message": $('#notifyMessage').val(),
+          "imageFile": src
         },
       }).done(function() {
         $('#notifyMessage').val("");
         alert('訊息已送出');
       });
     })
+  })
   </script>
 </html>

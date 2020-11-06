@@ -55,9 +55,9 @@ app.get('/message', async function(req, res) {
 });
 
 app.post('/sendMessage', async function(req, res){
-  const message = req.body.message;
+  const sendMessage = req.body;
   const token = fs.readFileSync('./src/token.txt', 'utf8');
-  lineNotify.sendNotify(token, message);
+  lineNotify.sendNotify(token, sendMessage);
 });
 
 // catch 404 and forward to error handler
