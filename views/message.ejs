@@ -28,7 +28,7 @@
     let src = "";
     function getImgPath() {
       $('#notifyFile').change(function() {
-        src = document.getElementById('notifyFile').files[0];
+        src = document.getElementById('notifyFile').files[0].name;
         return src
       });
     }
