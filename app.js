@@ -1,26 +1,64 @@
+require('dotenv').config();
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-
-const indexRouter = require('./routes/index');
-const callbackRouter = require('./routes/callback');
+const bodyParser = require('body-parser');
+const lineNotify = require('./src/lineNotify');
+const fs = require('fs'); 
 
 const app = express();
+
+const clientId = process.env.LINE_NOTIFY_CLIENT_ID;
+const clientSecret = process.env.LINE_NOTIFY_CLIENT_SECRET;
+const redirectUri = `${process.env.ROOT_PATH}/callback`;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
-app.use('/', indexRouter);
-app.use('/callback', callbackRouter);
+let URL = 'https://notify-bot.line.me/oauth/authorize?';
+    URL += 'response_type=code';
+    URL += '&client_id='+clientId;
+    URL += '&redirect_uri='+redirectUri;
+    URL += '&scope=notify';
+    URL += '&state=astro';
+
+app.get('/', (req, res) => {
+  res.render('index', {
+    url: URL
+  })
+});
+
+app.get('/callback', async function(req, res) {
+  const code = req.query.code;
+  const response = await lineNotify.getToken(code, redirectUri, clientId, clientSecret);
+  const token = response.data.access_token;
+  await lineNotify.sendNotify(token, "恭喜完成訂閱！");
+  fs.writeFile('./src/token.txt', token, function (err) {
+    if (err)
+      console.log(err);
+    else
+      console.log('成功寫入');
+  });
+  res.render('callback')
+});
+
+app.get('/message', async function(req, res) {
+  const token = fs.readFileSync('./src/token.txt', 'utf8');
+  res.render('message')
+});
+
+app.post('/sendMessage', async function(req, res){
+  const message = req.body.message;
+  const token = fs.readFileSync('./src/token.txt', 'utf8');
+  lineNotify.sendNotify(token, message);
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
