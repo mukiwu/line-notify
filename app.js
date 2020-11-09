@@ -90,12 +90,13 @@ app.post('/t_sendMessage', async function(req, res){
     // console.log('file', req.file.path)
     // res.send({msg:'上傳成功',img:req.file.path});
     const token = fs.readFileSync('./src/token.txt', 'utf8');
+
     const formData = {
       message: req.body.message,
-      imageFile: req.file
+      imageFile: fs.createReadStream(req.file.path)
     }
     lineNotify.testSendNotify(token, formData);
-    res.send({msg:'上傳成功',img:req.file.path});
+    res.send({msg:'上傳成功'});
   })
 });
 
