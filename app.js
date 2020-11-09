@@ -17,7 +17,7 @@ const redirectUri = `${process.env.ROOT_PATH}/callback`;
 const storage = multer.diskStorage({
   destination: path.join(__dirname,'./public/storage/') ,
   filename: function(req, file, cb){
-      cb(null, file.originalname);
+    cb(null, file.originalname);
   }
 })
 const upload = multer({
