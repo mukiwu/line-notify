@@ -70,32 +70,13 @@ app.get('/message', async function(req, res) {
 });
 
 app.post('/sendMessage', async function(req, res){
-  const sendMessage = req.body;
-  const token = fs.readFileSync('./src/token.txt', 'utf8');
-  lineNotify.sendNotify(token, sendMessage);
-});
-
-// test for upload
-app.get('/t_message', async function(req, res) {
-  const token = fs.readFileSync('./src/token.txt', 'utf8');
-  res.render('t_message')
-});
-app.post('/t_sendMessage', async function(req, res){
   upload(req, res, function(err){
     if(err) {
       console.log(err)
       return
     }
-    // console.log('message', req.body.message)
-    // console.log('file', req.file.path)
-    // res.send({msg:'上傳成功',img:req.file.path});
     const token = fs.readFileSync('./src/token.txt', 'utf8');
-
-    const formData = {
-      message: req.body.message,
-      imageFile: fs.createReadStream(req.file.path)
-    }
-    lineNotify.testSendNotify(token, formData);
+    lineNotify.sendNotify(token, req);
     res.send({msg:'上傳成功'});
   })
 });
