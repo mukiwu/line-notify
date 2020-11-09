@@ -4,6 +4,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const lineNotify = require('./src/lineNotify');
+const multer = require("multer");
 const fs = require('fs'); 
 
 const app = express();
@@ -11,6 +12,20 @@ const app = express();
 const clientId = process.env.LINE_NOTIFY_CLIENT_ID;
 const clientSecret = process.env.LINE_NOTIFY_CLIENT_SECRET;
 const redirectUri = `${process.env.ROOT_PATH}/callback`;
+
+//set Storage Engine
+const storage = multer.diskStorage({
+  destination: path.join(__dirname,'./public/storage/') ,
+  filename: function(req, file, cb){
+      cb(null, file.originalname);
+  }
+})
+const upload = multer({
+  storage: storage,
+  limits: {
+      fileSize: 1000000
+  },
+}).single('imageFile');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -66,9 +81,22 @@ app.get('/t_message', async function(req, res) {
   res.render('t_message')
 });
 app.post('/t_sendMessage', async function(req, res){
-  const sendMessage = req.body;
-  const token = fs.readFileSync('./src/token.txt', 'utf8');
-  lineNotify.testSendNotify(token, sendMessage);
+  upload(req, res, function(err){
+    if(err) {
+      console.log(err)
+      return
+    }
+    // console.log('message', req.body.message)
+    // console.log('file', req.file.path)
+    // res.send({msg:'上傳成功',img:req.file.path});
+    const token = fs.readFileSync('./src/token.txt', 'utf8');
+    const formData = {
+      message: req.body.message,
+      imageFile: req.file
+    }
+    lineNotify.testSendNotify(token, formData);
+    res.send({msg:'上傳成功',img:req.file.path});
+  })
 });
 
 // catch 404 and forward to error handler
