@@ -27,7 +27,20 @@ async function sendNotify(token, data) {
   return await axios.post(url, querystring.encode(formData), { headers }).catch(error=>{});
 }
 
+//test
+async function testSendNotify(token, data) {
+  const url = 'https://notify-api.line.me/api/notify';
+  const headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    Authorization: `Bearer ${token}`,
+  };
+  const formData = data;
+  console.log('formdata', formData)
+  return await axios.post(url, querystring.encode(formData), { headers }).catch(error=>{});
+}
+
 module.exports = {
   getToken,
   sendNotify,
+  testSendNotify
 };

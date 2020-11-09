@@ -60,6 +60,17 @@ app.post('/sendMessage', async function(req, res){
   lineNotify.sendNotify(token, sendMessage);
 });
 
+// test for upload
+app.get('/t_message', async function(req, res) {
+  const token = fs.readFileSync('./src/token.txt', 'utf8');
+  res.render('t_message')
+});
+app.post('/t_sendMessage', async function(req, res){
+  const sendMessage = req.body;
+  const token = fs.readFileSync('./src/token.txt', 'utf8');
+  lineNotify.testSendNotify(token, sendMessage);
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
