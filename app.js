@@ -54,7 +54,7 @@ app.get('/callback', async function(req, res) {
   const code = req.query.code;
   const response = await lineNotify.getToken(code, redirectUri, clientId, clientSecret);
   const token = response.data.access_token;
-  await lineNotify.sendNotify(token, "恭喜完成訂閱！");
+  // await lineNotify.sendNotify(token, "恭喜完成訂閱！");
   fs.writeFile('./src/token.txt', token, function (err) {
     if (err)
       console.log(err);
